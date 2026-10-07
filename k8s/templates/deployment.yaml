@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs-api
+  labels:
+    app: nestjs-api
+spec:
+  # Number of application replicas
+  #replicas: 1
+
+  # Keep the last 20 ReplicaSet revisions for rollback
+  revisionHistoryLimit: 20
+
+  # Zero-downtime rolling update
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  # Pod must remain Ready for 15 seconds
+  # before Kubernetes considers it stable
+  minReadySeconds: 15
+
+  selector:
+    matchLabels:
+      app: nestjs-api
+
+  template:
+    metadata:
+      labels:
+        app: nestjs-api
+
+    spec:
+      # =====================================================
+      # SECURITY CONTEXT
+      # =====================================================
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+
+      containers:
+        - name: nestjs-api
+
+          # =====================================================
+          # IMAGE
+          # =====================================================
+          # For your LOCAL Minikube project
+          image: k8b-api:latest
+          imagePullPolicy: Never
+
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+
+          # =====================================================
+          # CONTAINER SECURITY
+          # =====================================================
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+
+          # =====================================================
+          # GRACEFUL SHUTDOWN
+          # =====================================================
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 15
+
+          # =====================================================
+          # CONFIGURATION
+          # =====================================================
+          envFrom:
+            - configMapRef:
+                name: nestjs-api-config
+
+            - secretRef:
+                name: nestjs-api-secret
+
+          # =====================================================
+          # CPU / MEMORY
+          # =====================================================
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          # =====================================================
+          # PERSISTENT STORAGE
+          # =====================================================
+          volumeMounts:
+            - name: api-storage
+              mountPath: /app/uploads
+            - name: tmp-dir
+              mountPath: /tmp
+
+          # =====================================================
+          # READINESS PROBE
+          # =====================================================
+          # Pod receives traffic only after this succeeds.
+          # readinessProbe:
+          #   httpGet:
+          #     path: /health/readiness
+          #     port: http
+          #     scheme: HTTP
+          #   initialDelaySeconds: 10
+          #   periodSeconds: 10
+          #   timeoutSeconds: 2
+          #   failureThreshold: 3
+          #   successThreshold: 1
+
+          # # =====================================================
+          # # LIVENESS PROBE
+          # # =====================================================
+          # # Kubernetes restarts the container if this repeatedly fails.
+          # livenessProbe:
+          #   httpGet:
+          #     path: /health/liveness
+          #     port: http
+          #     scheme: HTTP
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 20
+          #   timeoutSeconds: 2
+          #   failureThreshold: 3
+          #   successThreshold: 1
+
+      # =====================================================
+      # VOLUMES
+      # =====================================================
+      volumes:
+        - name: api-storage
+          persistentVolumeClaim:
+            claimName: nestjs-api-pvc
+        - name: tmp-dir
+          emptyDir: {}

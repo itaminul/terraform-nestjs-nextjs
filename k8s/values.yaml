@@ -1,0 +1,20 @@
+# Environment configurations for Ingress
+ingress:
+  className: "nginx"
+  host: "k8b.local"
+  annotations:
+    enableCors: "true"
+    sslRedirect: "false"
+    rewriteTarget: "/$2"
+
+# Service configuration references
+services:
+  inventory:
+    name: "inventory-service"
+    port: 5000
+  frontend:
+    name: "nextjs-frontend-service"
+    port: 3001
+  api:
+    name: "nestjs-api" # <-- Fixed: Removed "-service" to match your template
+    port: 5000

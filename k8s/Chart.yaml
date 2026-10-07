@@ -1,0 +1,7 @@
+apiVersion: v2
+name: k8b-app
+description: A Helm chart for NestJS, NextJS and Inventory microservices
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+icon: https://helm.sh  # You can use any valid image URL here
