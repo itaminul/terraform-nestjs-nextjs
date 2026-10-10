@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-service             # 👈 Unique service name for the Ingress to find
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5000                      # 👈 External cluster port
+      targetPort: 5000                # 👈 Points to container port 5000
+  selector:
+    app: inventory-app
+
+
+
+

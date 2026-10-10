@@ -1,0 +1,17 @@
+services:
+  api:
+    container_name: nestjs_api
+
+    image: k8b-api:latest
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      NODE_ENV: production
+
+    restart: unless-stopped
