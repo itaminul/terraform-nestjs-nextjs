@@ -7,7 +7,7 @@ ingress:
     sslRedirect: "false"
     rewriteTarget: "/$2"
 
-# Service configuration references
+# Service configuration   references
 services:
   inventory:
     name: "inventory-service"
