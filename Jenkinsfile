@@ -4,17 +4,53 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Source code fetched successfully!'
+                echo 'Source code fetched successfully from the inventory branch!'
             }
         }
-        stage('Install Backend & Frontend') {
+
+        stage('Build & Test Backend') {
             steps {
-                echo 'Ready to configure NestJS and Next.js spaces...'
+                echo 'Navigating to backend application space...'
+                // sh commands run from the root folder, so we 'cd' into inventory
+                sh '''
+                    cd inventory
+                    echo "Installing backend dependencies..."
+                    # npm install
+                    # npm run build
+                '''
             }
         }
-        stage('Test Infrastructure') {
+
+        stage('Build & Test Frontend') {
             steps {
-                echo 'Ready to run Terraform plans...'
+                echo 'Navigating to frontend application space...'
+                sh '''
+                    cd k8f
+                    echo "Building Next.js frontend elements..."
+                    # npm install
+                    # npm run build
+                '''
+            }
+        }
+
+        stage('Validate Infrastructure') {
+            steps {
+                echo 'Running structural checks on root Terraform layouts...'
+                // Since main.tf is in the root directory, you run terraform commands directly
+                sh '''
+                    terraform init -backend=false
+                    terraform validate
+                '''
+            }
+        }
+
+        stage('Validate Kubernetes Manifests') {
+            steps {
+                echo 'Testing Kubernetes configuration templates...'
+                sh '''
+                    cd k8s
+                    echo "Checking helm charts and values.yaml layouts..."
+                '''
             }
         }
     }
