@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class AppService {
   getInventoryService(): string {
-    return 'Welcome to inventory service also more!';
+    return 'Welcome to inventory service also more edit!';
   }
   getList(): string {
     return 'Welcome to inventory list!';
