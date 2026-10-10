@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextjs-frontend-service     # 👈 Unique router name for the Ingress to map
+  namespace: default
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3001                    # 👈 External cluster network access port
+      targetPort: 3000              # 👈 Routes straight to containerPort 3000
+  selector:
+    app: inventory-frontend

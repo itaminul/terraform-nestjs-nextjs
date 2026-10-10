@@ -1,0 +1,17 @@
+services:
+  api:
+    container_name: inventory_service_api
+
+    image: inventory_service_api:latest
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "5000:5000"
+
+    environment:
+      NODE_ENV: development
+
+    restart: unless-stopped

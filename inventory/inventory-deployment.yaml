@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-deployment
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-app
+  template:
+    metadata:
+      labels:
+        app: inventory-app
+    spec:
+      containers:
+      - name: inventory-container
+        image: inventory-service:v1   # 👈 The image tag we will build next
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000         # 👈 Uses port 5000 isolated in its own pod
